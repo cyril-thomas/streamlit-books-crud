@@ -42,12 +42,8 @@ def view_books():
         try:
             text = recognizer.recognize_google(audio_content)
             st.write(f"Recognized Text: {text}")
-            books_df = pd.DataFrame(
-                books,
-                columns=["Book ID", "Title", "Author", "Publication Year", "ISBN"],
-            )
 
-            filtered_books = filter_books_with_llm(text, books_df)
+            filtered_books = filter_books_with_llm(text, panda_dataframe(books))
             st.dataframe(
                 filtered_books,
                 hide_index=True,
@@ -60,15 +56,19 @@ def view_books():
                 f"Could not request results from Google Speech Recognition service; {e}"
             )
     else:
-        books = get_all_books()
         if books:
             st.dataframe(
-                pd.DataFrame(
-                    books,
-                    columns=["Book ID", "Title", "Author", "Publication Year", "ISBN"],
-                ),
+                panda_dataframe(books),
                 hide_index=True,
             )
+        else:
+            st.write("No books in the inventory")
+            
+def panda_dataframe(books):
+    return pd.DataFrame(
+                    books,
+                    columns=["Book ID", "Title", "Author", "Publication Year", "ISBN"],
+                )
 
 
 if __name__ == "__main__":
