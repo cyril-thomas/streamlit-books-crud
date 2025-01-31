@@ -1,0 +1,8 @@
+streamlit
+streamlit-option-menu
+pysqlite3
+pandas
+SpeechRecognition
+langchain
+langchain_community
+langchain-openai
