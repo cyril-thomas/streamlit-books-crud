@@ -39,7 +39,7 @@ book-inventory-app
    ```
 
 ## Usage
-- Uncomment lines 16 to 19 in app.py
+- Uncomment lines 16 to 19 in app.py only on your first run, then comment back if you see unique constraint error.
 - Navigate through the application using the sidebar.
 - Use the "Add Book" page to input new book details.
 - View the list of books on the "View Books" page. Use the microphone to provide input for filtering the data frame.
