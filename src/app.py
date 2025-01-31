@@ -13,10 +13,10 @@ from utils.database import create_table, load_table_data
 # Main application
 def main():
 
-    # if "db_intialization" not in st.session_state:
-    #     SessionState.db_intialization = True
-    #     create_table()
-    #     load_table_data()
+    if "db_intialization" not in st.session_state:
+        SessionState.db_intialization = True
+        create_table()
+        # load_table_data()
 
     st.title("Book Inventory Management")
 
@@ -26,7 +26,7 @@ def main():
             ["Add Book", "Delete Book", "Update Book", "View Books"],
             icons=["book", "trash", "pencil", "eye"],
             menu_icon="cast",
-            default_index=0,
+            default_index=3,
         )
 
     if selected == "Add Book":

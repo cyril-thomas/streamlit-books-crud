@@ -44,10 +44,7 @@ def view_books():
             st.write(f"Recognized Text: {text}")
 
             filtered_books = filter_books_with_llm(text, panda_dataframe(books))
-            st.dataframe(
-                filtered_books,
-                hide_index=True,
-            )
+            streamlit_dataframe(filtered_books)
 
         except sr.UnknownValueError:
             st.write("Google Speech Recognition could not understand the audio")
@@ -57,18 +54,30 @@ def view_books():
             )
     else:
         if books:
-            st.dataframe(
-                panda_dataframe(books),
-                hide_index=True,
-            )
+            streamlit_dataframe(books)
         else:
             st.write("No books in the inventory")
-            
+
+
+def streamlit_dataframe(books):
+    config = {
+        "Publication Year": st.column_config.TextColumn("Publication Year"),
+        "ISBN": st.column_config.TextColumn("ISBN"),
+    }
+
+    st.dataframe(
+        panda_dataframe(books),
+        hide_index=True,
+        use_container_width=True,
+        column_config=config,
+    )
+
+
 def panda_dataframe(books):
     return pd.DataFrame(
-                    books,
-                    columns=["Book ID", "Title", "Author", "Publication Year", "ISBN"],
-                )
+        books,
+        columns=["Book ID", "Title", "Author", "Publication Year", "ISBN"],
+    )
 
 
 if __name__ == "__main__":
