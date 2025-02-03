@@ -115,6 +115,11 @@ def get_all_books():
     conn.close()
     return books
 
+def get_all_books_with_llm(sql_statement):
+    conn = get_db_connection()
+    books = conn.execute(sql_statement).fetchall()
+    conn.close()
+    return books
 
 def get_book_by_id(book_id):
     conn = get_db_connection()

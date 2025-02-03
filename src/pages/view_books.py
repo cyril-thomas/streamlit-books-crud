@@ -1,17 +1,19 @@
 import streamlit as st
-from utils.database import get_all_books
+from utils.database import get_all_books, get_all_books_with_llm
 import pandas as pd
 import speech_recognition as sr
 from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 import os
 
+llm = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY"),
+    # model="gpt-4o-mini",
+)
 
-def filter_books_with_llm(text, books_df):
-    llm = OpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        # model="gpt-4o-mini",
-    )
+
+def filter_books_with_dataframe(text, books_df):
+
     prompt_template = PromptTemplate(
         input_variables=["text", "books"],
         template="""
@@ -25,6 +27,31 @@ def filter_books_with_llm(text, books_df):
     prompt = prompt_template.format(text=text, books=books_json)
     response = llm(prompt)
     filtered_books = pd.read_json(response, orient="records")
+    return filtered_books
+
+
+def filter_books_with_SQL(text):
+
+    prompt_template = PromptTemplate(
+        input_variables=["text"],
+        template="""
+Background: There exists a database table of books in SQLite with the following columns. \
+- Book_id \
+- Title \
+- Author \
+- published date \
+- ISBN \
+I am a SQL developer who would like {text} to be converted into a SQL query to fetch all columns and rows that match the clause.\
+For any text field always use `like` operator.\
+Give me only the SQL query.\
+        """,
+    )
+
+    prompt = prompt_template.format(text=text)
+    response = llm(prompt)
+    print(response)
+    books = get_all_books_with_llm(response)
+    filtered_books = panda_dataframe(books)
     return filtered_books
 
 
@@ -43,7 +70,8 @@ def view_books():
             text = recognizer.recognize_google(audio_content)
             st.write(f"Recognized Text: {text}")
 
-            filtered_books = filter_books_with_llm(text, panda_dataframe(books))
+            # filtered_books = filter_books_with_dataframe(text, panda_dataframe(books))
+            filtered_books = filter_books_with_SQL(text)
             streamlit_dataframe(filtered_books)
 
         except sr.UnknownValueError:
@@ -53,24 +81,24 @@ def view_books():
                 f"Could not request results from Google Speech Recognition service; {e}"
             )
     else:
-        if books:
-            streamlit_dataframe(books)
-        else:
-            st.write("No books in the inventory")
+        streamlit_dataframe(books)
 
 
 def streamlit_dataframe(books):
-    config = {
-        "Publication Year": st.column_config.TextColumn("Publication Year"),
-        "ISBN": st.column_config.TextColumn("ISBN"),
-    }
+    if books:
+        config = {
+            "Publication Year": st.column_config.TextColumn("Publication Year"),
+            "ISBN": st.column_config.TextColumn("ISBN"),
+        }
 
-    st.dataframe(
-        panda_dataframe(books),
-        hide_index=True,
-        use_container_width=True,
-        column_config=config,
-    )
+        st.dataframe(
+            panda_dataframe(books),
+            hide_index=True,
+            use_container_width=True,
+            column_config=config,
+        )
+    else:
+        st.write("No books in the inventory")
 
 
 def panda_dataframe(books):
