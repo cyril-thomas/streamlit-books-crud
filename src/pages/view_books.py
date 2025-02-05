@@ -39,7 +39,7 @@ Background: There exists a database table of books in SQLite with the following 
 - Book_id \
 - Title \
 - Author \
-- published date \
+- published_year \
 - ISBN \
 I am a SQL developer who would like {text} to be converted into a SQL query to fetch all columns and rows that match the clause.\
 For any text field always use `like` operator.\
@@ -51,8 +51,7 @@ Give me only the SQL query.\
     response = llm(prompt)
     print(response)
     books = get_all_books_with_llm(response)
-    filtered_books = panda_dataframe(books)
-    return filtered_books
+    return books
 
 
 def view_books():

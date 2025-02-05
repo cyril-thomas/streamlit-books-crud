@@ -7,7 +7,7 @@ from pages.add_book import add_book
 from pages.delete_book import delete_book
 from pages.update_book import update_book
 from pages.view_books import view_books
-from utils.database import create_table, load_table_data
+from utils.database import create_table, load_table_data, drop_table
 
 
 # Main application
@@ -15,8 +15,9 @@ def main():
 
     if "db_intialization" not in st.session_state:
         SessionState.db_intialization = True
+        drop_table()
         create_table()
-        # load_table_data()
+        load_table_data()
 
     st.title("Book Inventory Management")
 

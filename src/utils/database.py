@@ -7,6 +7,17 @@ def get_db_connection():
     return conn
 
 
+def drop_table():
+    conn = get_db_connection()
+    conn.execute(
+        """
+DROP TABLE IF EXISTS books;
+"""
+    )
+    conn.commit()
+    conn.close()
+
+
 def create_table():
     conn = get_db_connection()
     conn.execute(
@@ -15,7 +26,7 @@ CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     author TEXT NOT NULL,
-    published_date INT,
+    published_year INT,
     isbn BIGINT UNIQUE
 );
 """
@@ -27,7 +38,7 @@ CREATE TABLE IF NOT EXISTS books (
 def load_table_data():
     conn = get_db_connection()
     conn.execute(
-        """ INSERT INTO books(id, title, author, published_date, isbn) VALUES 
+        """ INSERT INTO books(id, title, author, published_year, isbn) VALUES 
 (1, 'The Great Gatsby', 'F. Scott Fitzgerald', 1925, 9780743273565),
 (2, 'To Kill a Mockingbird', 'Harper Lee', 1960, 9780061120084),
 (3, 'The Catcher in the Rye', 'J.D. Salinger', 1951, 9780316769488),
@@ -115,11 +126,13 @@ def get_all_books():
     conn.close()
     return books
 
+
 def get_all_books_with_llm(sql_statement):
     conn = get_db_connection()
     books = conn.execute(sql_statement).fetchall()
     conn.close()
     return books
+
 
 def get_book_by_id(book_id):
     conn = get_db_connection()
